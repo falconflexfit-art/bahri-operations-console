@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Bahri Operations Console</title>
+<meta name="theme-color" content="#062c52" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#062c52;
+  --navy-2:#0a3d70;
+  --blue:#1676ff;
+  --blue-soft:#eaf3ff;
+  --bg:#f4f7fb;
+  --card:#fff;
+  --text:#15243b;
+  --muted:#5d6d82;
+  --subtle:#8492a6;
+  --line:#dce3ee;
+  --line-strong:#c3cdda;
+  --green:#1f9a58;
+  --green-fg:#0d6b38;
+  --green-soft:#e7f7ee;
+  --orange:#e08a12;
+  --orange-fg:#8d5608;
+  --orange-soft:#fff3e3;
+  --red:#d24b4b;
+  --shadow:0 3px 14px rgba(26,49,78,.07);
+  --radius:12px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:"Plus Jakarta Sans",system-ui,sans-serif;line-height:1.5}
+button,select,input{font:inherit}
+button:not(:disabled),[role="button"]{cursor:pointer}
+button:disabled{cursor:not-allowed}
+img,svg{display:block}
+.app{min-height:100dvh;display:flex;flex-direction:column}
+.header{background:var(--navy);color:#f4f8fc;padding:14px 20px}
+.header-inner,.nav-inner,.wrap,.footer-inner{max-width:1200px;margin:0 auto}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0;color:inherit;text-decoration:none}
+.brand strong{display:block;font-size:18px;letter-spacing:-.03em}
+.brand span{display:block;font-size:12px;opacity:.7}
+.user{display:flex;align-items:center;gap:10px;font-size:13px}
+.avatar{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);display:grid;place-items:center;font-weight:700;font-size:12px}
+.bell{position:relative;width:44px;height:44px;border:0;border-radius:50%;background:transparent;color:#f4f8fc}
+.badge{position:absolute;top:8px;right:8px;min-width:16px;height:16px;border-radius:99px;background:var(--red);color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center}
+.nav{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.nav-inner{display:flex;align-items:center;gap:4px;overflow-x:auto;padding:0 12px}
+.navbtn{flex:none;height:48px;border:0;background:none;color:var(--muted);font-weight:700;font-size:14px;padding:0 14px;border-bottom:3px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.navbtn.active{color:var(--blue);border-bottom-color:var(--blue)}
+.roles{margin-left:auto;display:flex;gap:2px;background:#eef3f9;border:1px solid var(--line);border-radius:8px;padding:3px}
+.roles button{height:32px;border:0;background:transparent;border-radius:6px;padding:0 10px;font-size:12px;font-weight:700;color:var(--muted)}
+.roles button.on{background:var(--navy);color:#f4f8fc}
+.wrap{padding:20px 16px 32px;flex:1;width:100%}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
+@media(min-width:900px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat,.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.stat{padding:16px;display:flex;justify-content:space-between;gap:10px;min-height:108px}
+.stat small{display:block;font-size:12px;font-weight:700;color:var(--muted)}
+.stat b{display:block;font-size:26px;font-weight:800;letter-spacing:-.03em;margin:6px 0 2px;font-variant-numeric:tabular-nums}
+.stat em{font-style:normal;font-size:12px;font-weight:700}
+.bubble{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;align-self:center;flex:none}
+.bubble.blue{background:var(--blue-soft);color:var(--blue)}
+.bubble.green{background:var(--green-soft);color:var(--green)}
+.bubble.orange{background:var(--orange-soft);color:var(--orange)}
+.workspace{display:grid;gap:16px}
+@media(min-width:980px){.workspace{grid-template-columns:1.15fr .85fr;align-items:start}}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 10px;gap:10px}
+.panel-head h2{margin:0;font-size:18px;letter-spacing:-.03em}
+.updated{font-size:11px;color:var(--muted)}
+.tabs{display:flex;gap:8px;overflow:auto;padding:0 16px 12px}
+.tab{border:0;border-radius:8px;height:36px;padding:0 12px;background:#eef3f9;color:var(--muted);font-size:12px;font-weight:700;white-space:nowrap}
+.tab.on{background:var(--navy);color:#f4f8fc}
+.board{padding:0 16px 16px}
+.group{margin:10px 0 8px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800}
+.dot{width:12px;height:12px;border-radius:50%;border:2px solid currentColor}
+.job{display:grid;grid-template-columns:4.6rem 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:12px 10px;margin-bottom:8px;background:#fff;text-align:left;width:100%}
+.job.active{border-color:#b9d4ff;background:#f8fbff}
+.job .time{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.job .date{font-size:11px;color:var(--muted);margin-top:2px}
+.job strong{font-size:13px}
+.job .sub{font-size:12px;color:var(--muted);margin-top:2px}
+.status{display:inline-block;margin-left:6px;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:800;vertical-align:middle}
+.status.blue{background:var(--blue-soft);color:var(--blue)}
+.status.green{background:var(--green-soft);color:var(--green-fg)}
+.status.gray{background:#eef1f5;color:#737e8e}
+.status.orange{background:var(--orange-soft);color:var(--orange-fg)}
+.form-body{padding:0 16px 16px}
+.section{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px}
+.section h3{margin:0 0 10px;font-size:13px;display:flex;align-items:center;gap:8px}
+label{display:block;font-size:12px;font-weight:700;margin:0 0 6px}
+.req{color:var(--red)}
+input,select,textarea{width:100%;min-height:44px;border:1px solid var(--line-strong);border-radius:8px;padding:8px 10px;background:#fff;color:var(--text)}
+textarea{min-height:72px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.boats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.boat{border:1px solid var(--line);border-radius:8px;padding:12px;background:#fff;text-align:left}
+.boat.on{border-color:var(--blue);background:var(--blue-soft)}
+.boat strong{display:block;font-size:13px}
+.boat .st{font-size:12px;font-weight:700;margin-top:4px}
+.boat small{display:block;font-size:11px;color:var(--muted);margin-top:8px}
+.submit{width:100%;min-height:44px;border:0;border-radius:8px;background:var(--blue);color:#fff;font-weight:800}
+.submit:disabled{background:#e6eaf0;color:#a0a9b5}
+.hint{text-align:center;color:var(--muted);font-size:12px;margin-top:8px}
+.page h1{margin:4px 0 8px;font-size:30px;letter-spacing:-.03em}
+.page p.lead{margin:0 0 18px;color:var(--muted);max-width:42rem}
+.cards{display:grid;gap:12px}
+@media(min-width:700px){.cards.two{grid-template-columns:1fr 1fr}}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.stamp{width:100%;min-height:112px;border:0;border-radius:14px;background:var(--blue);color:#fff;padding:18px}
+.stamp small{display:block;opacity:.8;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.stamp b{display:block;font-size:24px;margin-top:4px}
+.log{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:8px;background:#fff}
+.tick{width:32px;height:32px;border-radius:8px;background:#eef3f9;display:grid;place-items:center;flex:none;color:var(--green);font-weight:800}
+.footer{margin-top:auto;border-top:1px solid var(--line);background:#fff;padding:18px 16px}
+.footer-inner{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+.ok{color:var(--green);font-weight:700}
+.hidden{display:none !important}
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;box-shadow:var(--shadow);z-index:40;font-size:14px;font-weight:600}
+.plot{width:100%;height:360px;border-radius:12px;border:1px solid var(--line);background:#c5d9ec}
+@media(max-width:720px){
+  .roles{display:none}
+  .user span{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="header-inner">
+      <a class="brand" href="#" onclick="show('dashboard');return false">
+        <svg width="36" height="40" viewBox="0 0 64 72" fill="none" aria-hidden="true">
+          <path d="M10 8v36l22 18 22-18V8H42v30L32 46 22 38V8H10Z" fill="#fff" opacity=".95"/>
+          <path d="M27 8h10v26l-5 5-5-5V8Z" fill="#9ec8ff"/>
+        </svg>
+        <div>
+          <strong>Bahri Operations</strong>
+          <span>Ras Tanura Operations Console</span>
+        </div>
+      </a>
+      <div class="user">
+        <button class="bell" type="button" onclick="toast(alerts().join(' · ') || 'No alerts')" aria-label="Notifications">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>
+          <span class="badge" id="bellCount">0</span>
+        </button>
+        <div class="avatar">OP</div>
+        <span><b>operations</b><br>Operations</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <button class="navbtn active" data-page="dashboard" onclick="show('dashboard')">Dashboard</button>
+      <button class="navbtn" data-page="jobs" onclick="show('jobs')">Jobs</button>
+      <button class="navbtn" data-page="boats" onclick="show('boats')">Boats</button>
+      <button class="navbtn" data-page="people" onclick="show('people')">People</button>
+      <button class="navbtn" data-page="reports" onclick="show('reports')">Reports</button>
+      <button class="navbtn" data-page="admin" onclick="show('admin')">Admin</button>
+      <div class="roles" id="roles"></div>
+    </div>
+  </nav>
+
+  <main class="wrap" id="root"></main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div style="display:flex;gap:10px;align-items:center">
+        <svg width="26" height="30" viewBox="0 0 64 72" fill="none"><path d="M10 8v36l22 18 22-18V8H42v30L32 46 22 38V8H10Z" fill="#062c52"/><path d="M27 8h10v26l-5 5-5-5V8Z" fill="#1676ff"/></svg>
+        <div><b style="color:var(--text)">Bahri Operations Console</b><br>© 2026 Bahri. All rights reserved.</div>
+      </div>
+      <div>Version 1.0.0 · <span class="ok">System healthy</span> · <span id="clock"></span></div>
+    </div>
+  </footer>
+</div>
+
+<script>
+const VESSELS = [
+  {id:"v1", name:"Front Queen", berth:"RT-A3", imo:"9731101"},
+  {id:"v2", name:"Maran Antares", berth:"RT-A5", imo:"9412036"},
+  {id:"v3", name:"DHT Tiger", berth:"RT-A2", imo:"9592200"},
+  {id:"v4", name:"STI Excel", berth:"RT-A7", imo:"9686748"},
+  {id:"v5", name:"Al Jasrah", berth:"RT-L1", imo:"9684588"},
+  {id:"v6", name:"Nordic Freedom", berth:"RT-A4", imo:"9724415"},
+  {id:"v7", name:"Minerva Zoe", berth:"RT-A8", imo:"9748122"},
+  {id:"v8", name:"Pacific Diamond", berth:"RT-A6", imo:"9617743"},
+  {id:"v9", name:"CPO Norway", berth:"RT-A1", imo:"9693301"},
+  {id:"v10", name:"Bahri Yanbu", berth:"RT-A9", imo:"9379698"}
+];
+const BOATS = [
+  {id:"yara", name:"Bahri Yara", call:"HZ-YARA"},
+  {id:"jenan", name:"Bahri Jenan", call:"HZ-JENAN"}
+];
+const CAPTAINS = [
+  {id:"yusuf", name:"Yusuf Al-Dossary", boat:"yara", rank:"Master"},
+  {id:"fahad", name:"Fahad Al-Ghamdi", boat:"yara", rank:"Chief Officer"},
+  {id:"jassim", name:"Jassim Al-Otaibi", boat:"jenan", rank:"Master"},
+  {id:"nasser", name:"Nasser Al-Harbi", boat:"jenan", rank:"Chief Officer"}
+];
+const TYPES = {
+  crew_change:"Crew change", provisions:"Provisions", stores:"Stores delivery",
+  combined:"Combined", personnel:"Personnel", garbage:"Garbage", documents:"Documents"
+};
+const STAMPS = [
+  ["departed_base","Departed base"],
+  ["alongside","Alongside vessel"],
+  ["ops_start","Ops start"],
+  ["ops_complete","Ops complete"],
+  ["departed_vessel","Departed vessel"],
+  ["returned_base","Returned base"]
+];
+
+const state = {
+  page:"dashboard",
+  role:"shore",
+  tab:"all",
+  form:{vessel:"", type:"", date:"2026-08-31", time:"17:15", paxOut:"", paxIn:"", pallets:"", kg:"", cargo:"", boat:"", captain:""},
+  jobs: seed()
+};
+
+function seed(){
+  const d = "31/08/2026";
+  return [
+    {id:1, time:"10:46", date:d, boat:"yara", vessel:"v9", type:"crew_change", status:"Completed", pax:"7 pax", captain:"yusuf"},
+    {id:2, time:"10:59", date:d, boat:"jenan", vessel:"v3", type:"provisions", status:"Completed", pax:"12 pallets", captain:"jassim"},
+    {id:3, time:"12:27", date:d, boat:"yara", vessel:"v6", type:"combined", status:"Completed", pax:"5 pax", captain:"yusuf"},
+    {id:4, time:"13:16", date:d, boat:"jenan", vessel:"v5", type:"personnel", status:"Completed", pax:"3 pax", captain:"jassim"},
+    {id:5, time:"14:17", date:d, boat:"jenan", vessel:"v8", type:"stores", status:"Completed", pax:"8 pallets", captain:"jassim"},
+    {id:6, time:"16:25", date:d, boat:"jenan", vessel:"v1", type:"crew_change", status:"Underway", pax:"13 pax", captain:"jassim", stamps:["departed_base","alongside","ops_start"]},
+    {id:7, time:"17:15", date:d, boat:"yara", vessel:"v6", type:"crew_change", status:"Assigned", pax:"8 pax", captain:"yusuf", stamps:[]},
+    {id:8, time:"18:30", date:d, boat:"", vessel:"v2", type:"stores", status:"Draft", pax:"10 pallets", stamps:[]},
+    {id:9, time:"20:00", date:d, boat:"jenan", vessel:"v4", type:"crew_change", status:"Assigned", pax:"5 pax", captain:"nasser", stamps:[]},
+    {id:10,time:"20:54", date:d, boat:"", vessel:"v7", type:"documents", status:"Draft", pax:"—", stamps:[]}
+  ];
+}
+
+function vName(id){ return (VESSELS.find(v=>v.id===id)||{}).name || id; }
+function bName(id){ return id ? (BOATS.find(b=>b.id===id)||{}).name : "Unassigned"; }
+function cName(id){ return (CAPTAINS.find(c=>c.id===id)||{}).name || "—"; }
+function bucket(s){ return s==="Underway"||s==="Returned" ? "active" : s==="Completed" ? "done" : "upcoming"; }
+function tone(s){ return s==="Underway"?"blue":s==="Assigned"||s==="Completed"?"green":s==="Returned"?"orange":"gray"; }
+function boatStatus(id){
+  const live = state.jobs.find(j=>j.boat===id && (j.status==="Underway"||j.status==="Returned"));
+  if(live) return live.status==="Returned" ? "Returning" : "Underway";
+  if(state.jobs.find(j=>j.boat===id && j.status==="Assigned")) return "Assigned";
+  return "Available";
+}
+function alerts(){
+  const a=[];
+  const u = state.jobs.filter(j=>j.status==="Draft").length;
+  const w = state.jobs.filter(j=>j.status==="Underway");
+  if(u) a.push(u+" unassigned request"+(u>1?"s":""));
+  if(w[0]) a.push(bName(w[0].boat)+" underway to "+vName(w[0].vessel));
+  return a;
+}
+
+function show(page){
+  state.page = page;
+  document.querySelectorAll(".navbtn").forEach(b=>b.classList.toggle("active", b.dataset.page===page));
+  render();
+}
+function toast(msg){
+  const t=document.createElement("div"); t.className="toast"; t.textContent=msg;
+  document.body.appendChild(t); setTimeout(()=>t.remove(),2200);
+}
+function setRole(r){ state.role=r; render(); }
+
+function renderRoles(){
+  document.getElementById("roles").innerHTML =
+    [["shore","Shore"],["yara","Yara"],["jenan","Jenan"]].map(([id,l])=>
+      `<button class="${state.role===id?"on":""}" onclick="setRole('${id}')">${l}</button>`
+    ).join("");
+}
+
+function jobRow(j, highlight){
+  return `<button class="job ${highlight?"active":""}" onclick="openJob(${j.id})">
+    <div><div class="time">${j.time}</div><div class="date">${j.date}</div></div>
+    <div>
+      <strong>${bName(j.boat)} <span class="status ${tone(j.status)}">${j.status}</span></strong>
+      <div class="sub">${TYPES[j.type]} · ${vName(j.vessel)}</div>
+      <div class="sub">${j.pax||"—"}</div>
+    </div>
+    <div style="color:var(--subtle);font-size:20px">›</div>
+  </button>`;
+}
+
+function dashboard(){
+  const jobs = state.jobs;
+  const active = jobs.filter(j=>bucket(j.status)==="active");
+  const up = jobs.filter(j=>bucket(j.status)==="upcoming");
+  const done = jobs.filter(j=>bucket(j.status)==="done");
+  const avail = BOATS.filter(b=>boatStatus(b.id)==="Available").length;
+  const vis = state.tab==="active"?active:state.tab==="upcoming"?up:state.tab==="done"?done:jobs;
+  const groups = [
+    {k:"active", title:"Active", list:vis.filter(j=>bucket(j.status)==="active"), color:"var(--red)"},
+    {k:"upcoming", title:"Upcoming", list:vis.filter(j=>bucket(j.status)==="upcoming"), color:"var(--orange)"},
+    {k:"done", title:"Completed today", list:vis.filter(j=>bucket(j.status)==="done"), color:"var(--green)"}
+  ].filter(g=>g.list.length);
+  return `
+    <div class="stats">
+      ${stat("Active jobs", active.length, active.length?"Underway / assigned":"None live","blue","anchor")}
+      ${stat("Today's jobs", jobs.length, done.length+" completed","green","check")}
+      ${stat("Upcoming", up.length, "Next 24h","orange","clock")}
+      ${stat("Boats status", avail+" / 2", avail+" available","blue","ship")}
+    </div>
+    <div class="workspace">
+      <section class="panel">
+        <div class="panel-head"><h2>Dispatch board</h2><div class="updated">Last updated: <span class="liveclock"></span></div></div>
+        <div class="tabs">
+          ${[["all","All jobs ("+jobs.length+")"],["active","Active ("+active.length+")"],["upcoming","Upcoming ("+up.length+")"],["done","Completed ("+done.length+")"]]
+            .map(([k,l])=>`<button class="tab ${state.tab===k?"on":""}" onclick="state.tab='${k}';render()">${l}</button>`).join("")}
+        </div>
+        <div class="board">
+          ${groups.map(g=>`<div class="group"><span class="dot" style="color:${g.color}"></span>${g.title}</div>`+g.list.map(j=>jobRow(j, bucket(j.status)==="active")).join("")).join("")}
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h2>Create new job</h2></div>
+        <div class="form-body">${createForm()}</div>
+      </section>
+    </div>`;
+}
+function stat(label,val,hint,tone){
+  return `<div class="stat"><div><small>${label}</small><b>${val}</b><em style="color:var(--${tone==="green"?"green":tone==="orange"?"orange":"blue"})">${hint}</em></div><div class="bubble ${tone}">${icon(tone)}</div></div>`;
+}
+function icon(t){
+  if(t==="green") return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>';
+  if(t==="orange") return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>';
+  return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M19 21c-.6.5-1.2 1-2.5 1-2.5 0-2.5-2-5-2-1.3 0-1.9.5-2.5 1"/><path d="M5 12V3l7-1 7 1v9"/></svg>';
+}
+function createForm(){
+  const f=state.form;
+  const ready = f.vessel && f.type && f.date && f.time && f.boat && f.captain;
+  const caps = CAPTAINS.filter(c=>!f.boat || c.boat===f.boat);
+  return `
+    <form onsubmit="createJob(event)">
+      <div class="section"><h3>Job</h3>
+        <label>Mother vessel <span class="req">*</span></label>
+        <select onchange="state.form.vessel=this.value;render()">
+          <option value="">Select from list</option>
+          ${VESSELS.map(v=>`<option value="${v.id}" ${f.vessel===v.id?"selected":""}>${v.name} · ${v.berth} · IMO ${v.imo}</option>`).join("")}
+        </select>
+        <label style="margin-top:10px">Service type <span class="req">*</span></label>
+        <select onchange="state.form.type=this.value;render()">
+          <option value="">Select service type</option>
+          ${Object.entries(TYPES).map(([k,l])=>`<option value="${k}" ${f.type===k?"selected":""}>${l}</option>`).join("")}
+        </select>
+        <label style="margin-top:10px">Scheduled date & time <span class="req">*</span></label>
+        <div class="grid2">
+          <input type="date" value="${f.date}" onchange="state.form.date=this.value">
+          <input type="time" value="${f.time}" onchange="state.form.time=this.value">
+        </div>
+      </div>
+      <div class="section"><h3>People</h3>
+        <div class="grid2">
+          <div><label>Going out</label><input inputmode="numeric" placeholder="e.g. 8" value="${f.paxOut}" oninput="state.form.paxOut=this.value"></div>
+          <div><label>Returning</label><input inputmode="numeric" placeholder="e.g. 8" value="${f.paxIn}" oninput="state.form.paxIn=this.value"></div>
+        </div>
+      </div>
+      <div class="section"><h3>Cargo</h3>
+        <div class="grid2">
+          <div><label>Pallets planned</label><input inputmode="numeric" placeholder="e.g. 10" value="${f.pallets}" oninput="state.form.pallets=this.value"></div>
+          <div><label>Cargo weight (kg)</label><input inputmode="numeric" placeholder="e.g. 450" value="${f.kg}" oninput="state.form.kg=this.value"></div>
+        </div>
+        <label style="margin-top:10px">Cargo description</label>
+        <input placeholder="e.g. Spare parts, provisions, tools..." value="${f.cargo}" oninput="state.form.cargo=this.value">
+      </div>
+      <div class="section"><h3>Assignment</h3>
+        <label>Boat <span class="req">*</span></label>
+        <div class="boats">
+          ${BOATS.map(b=>{
+            const st=boatStatus(b.id);
+            return `<button type="button" class="boat ${f.boat===b.id?"on":""}" onclick="pickBoat('${b.id}')">
+              <strong>${b.name}</strong>
+              <div class="st" style="color:${st==="Available"?"var(--green)":"var(--orange)"}">${st}</div>
+              <small>${b.call}</small>
+            </button>`;
+          }).join("")}
+        </div>
+        <label style="margin-top:10px">Captain <span class="req">*</span></label>
+        <select onchange="state.form.captain=this.value;render()">
+          <option value="">Choose captain</option>
+          ${caps.map(c=>`<option value="${c.id}" ${f.captain===c.id?"selected":""}>${c.name} · ${c.rank}</option>`).join("")}
+        </select>
+      </div>
+      <button class="submit" ${ready?"":"disabled"}>Create job</button>
+      <div class="hint">Complete required fields (<span class="req">*</span>) to create the job.</div>
+    </form>`;
+}
+function pickBoat(id){
+  state.form.boat=id;
+  const m=CAPTAINS.find(c=>c.boat===id && c.rank==="Master");
+  if(m) state.form.captain=m.id;
+  render();
+}
+function createJob(e){
+  e.preventDefault();
+  const f=state.form;
+  if(!(f.vessel&&f.type&&f.boat&&f.captain)) return;
+  const pax = f.paxOut||f.paxIn ? `${Number(f.paxOut||0)+Number(f.paxIn||0)} pax` : (f.pallets? f.pallets+" pallets":"—");
+  state.jobs.unshift({
+    id: Date.now(), time:f.time, date:f.date.split("-").reverse().join("/"),
+    boat:f.boat, vessel:f.vessel, type:f.type, status:"Assigned", pax, captain:f.captain, stamps:[]
+  });
+  state.form={vessel:"",type:"",date:f.date,time:f.time,paxOut:"",paxIn:"",pallets:"",kg:"",cargo:"",boat:"",captain:""};
+  toast("Job created and dispatched");
+  render();
+}
+function jobsPage(){
+  return `<div class="page"><p class="lead" style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px">State model</p>
+    <h1>Jobs</h1>
+    <div class="tabs" style="padding:0 0 12px">${["all","active","upcoming","done"].map(k=>`<button class="tab ${state.tab===k?"on":""}" onclick="state.tab='${k}';render()">${k[0].toUpperCase()+k.slice(1)}</button>`).join("")}</div>
+    ${(state.tab==="all"?state.jobs:state.jobs.filter(j=>bucket(j.status)===(state.tab==="done"?"done":state.tab))).map(j=>jobRow(j)).join("")}
+  </div>`;
+}
+function boatsPage(){
+  return `<div class="page"><p class="lead" style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px">Ras Tanura fleet</p>
+    <h1>Boats</h1><p class="lead">Two OSVs on the jetty. Positions on the plot are illustrative for this file.</p>
+    <div class="cards two">${BOATS.map(b=>{
+      const live=state.jobs.find(j=>j.boat===b.id && bucket(j.status)==="active");
+      const st=boatStatus(b.id);
+      const master=CAPTAINS.find(c=>c.boat===b.id && c.rank==="Master");
+      return `<div class="card">
+        <div style="display:flex;justify-content:space-between;gap:8px">
+          <div><div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--subtle)">${b.call}</div>
+          <h2 style="margin:2px 0 0;font-size:20px">${b.name}</h2></div>
+          <span class="status ${st==="Available"?"green":"blue"}">${st}</span>
+        </div>
+        <p style="font-size:13px;color:var(--muted)">Master · ${master.name}</p>
+        ${live?`<p style="font-size:13px"><b>${vName(live.vessel)}</b><br>${TYPES[live.type]} · ${live.time}</p>
+        <button class="submit" style="width:auto;padding:0 14px" onclick="show('crew');state.crew='${b.id}';render()">Open crew console</button>`:
+        `<p style="color:var(--muted);font-size:13px">At Ras Tanura base. Waiting for dispatch.</p>`}
+      </div>`;
+    }).join("")}</div>
+    <svg class="plot" viewBox="0 0 1000 360" style="margin-top:16px" role="img" aria-label="Ras Tanura plot">
+      <rect width="1000" height="360" fill="#c5d9ec"/>
+      <path d="M0 0 L220 0 L240 80 L210 160 L240 220 L180 360 L0 360 Z" fill="#e4ebf2"/>
+      <circle cx="210" cy="200" r="6" fill="#1676ff"/>
+      <text x="222" y="204" font-size="14" font-family="Plus Jakarta Sans" fill="#062c52" font-weight="700">RT base</text>
+      <polygon points="210,188 218,210 202,210" fill="#062c52"/>
+      <text x="210" y="230" text-anchor="middle" font-size="12" font-weight="700" fill="#062c52">Y</text>
+      <polygon points="520,140 528,162 512,162" fill="#1676ff"/>
+      <text x="520" y="182" text-anchor="middle" font-size="12" font-weight="700" fill="#062c52">J</text>
+      <text x="540" y="144" font-size="12" fill="#5d6d82">Front Queen</text>
+    </svg>
+  </div>`;
+}
+function peoplePage(){
+  return `<div class="page"><p class="lead" style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px">Duty crew</p>
+    <h1>People</h1><p class="lead">Masters and officers on Yara and Jenan this shift.</p>
+    <div class="cards two">${CAPTAINS.map(c=>{
+      const live=state.jobs.find(j=>j.boat===c.boat && j.captain===c.id && bucket(j.status)!=="done");
+      return `<div class="card">
+        <div style="font-size:12px;font-weight:700;color:var(--muted)">${c.rank}</div>
+        <h2 style="margin:2px 0 4px;font-size:18px">${c.name}</h2>
+        <div style="font-size:13px;color:var(--muted)">${bName(c.boat)}</div>
+        <p style="font-size:13px;margin:10px 0">${live?"On job · "+vName(live.vessel):bName(c.boat)+" at base"}</p>
+        <button class="submit" style="width:auto;padding:0 14px;background:var(--navy)" onclick="state.crew='${c.boat}';show('crew')">Crew console</button>
+      </div>`;
+    }).join("")}</div>
+  </div>`;
+}
+function crewPage(){
+  const boat = state.crew || (state.role==="jenan"?"jenan":"yara");
+  const job = state.jobs.find(j=>j.boat===boat && (j.status==="Underway"||j.status==="Assigned"||j.status==="Returned"));
+  const stamps = job && job.stamps ? job.stamps : [];
+  const next = STAMPS.find(s=>!stamps.includes(s[0]));
+  return `<div class="page" style="max-width:520px">
+    <div class="roles" style="display:flex;margin:0 0 16px">${BOATS.map(b=>`<button class="${boat===b.id?"on":""}" onclick="state.crew='${b.id}';render()">${b.name.split(" ")[1]}</button>`).join("")}</div>
+    <h1>${bName(boat)}</h1>
+    <p class="lead">Device log · stamps at local clock, even offline.</p>
+    ${!job?`<div class="card">No dispatched trip. Shore will assign the next job.</div>`:`
+      <div class="card"><div style="display:flex;justify-content:space-between"><b>${vName(job.vessel)}</b><span class="status ${tone(job.status)}">${job.status}</span></div>
+      <div class="sub">${TYPES[job.type]} · ${job.pax}</div></div>
+      ${next?`<button class="stamp" onclick="stamp(${job.id},'${next[0]}')"><small>Record next event</small><b>${next[1]}</b></button>`:
+        `<div class="card" style="background:var(--green-soft);border-color:#bfe8cf">Six stamps in. Shore will verify and close.</div>`}
+      ${STAMPS.map(([k,l],i)=>`<div class="log"><div class="tick">${stamps.includes(k)?"✓":(i+1)}</div><div style="flex:1"><b>${l}</b></div><div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">${stamps.includes(k)?"device":"—"}</div></div>`).join("")}
+    `}
+  </div>`;
+}
+function stamp(id, key){
+  const j=state.jobs.find(x=>x.id===id); if(!j) return;
+  j.stamps=j.stamps||[]; j.stamps.push(key);
+  if(key==="departed_base"||key==="alongside"||key==="ops_start"||key==="ops_complete"||key==="departed_vessel") j.status="Underway";
+  if(key==="returned_base") j.status="Returned";
+  toast(STAMPS.find(s=>s[0]===key)[1]+" recorded");
+  render();
+}
+function reportsPage(){
+  const done=state.jobs.filter(j=>j.status==="Completed"||j.status==="Returned");
+  const y=done.filter(j=>j.boat==="yara").length, n=done.filter(j=>j.boat==="jenan").length;
+  return `<div class="page" style="max-width:720px">
+    <p class="lead" style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px">Daily close</p>
+    <h1>Shift report</h1>
+    <p class="lead">Ras Tanura · every returned trip is in this count.</p>
+    <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat"><div><small>Trips</small><b>${done.length}</b></div></div>
+      <div class="stat"><div><small>Yara</small><b>${y}</b></div></div>
+      <div class="stat"><div><small>Jenan</small><b>${n}</b></div></div>
+    </div>
+    ${done.map(j=>`<div class="card" style="margin-bottom:8px"><b>${vName(j.vessel)}</b><div class="sub">${bName(j.boat)} · ${TYPES[j.type]} · ${j.time}</div></div>`).join("")}
+  </div>`;
+}
+function adminPage(){
+  return `<div class="page" style="max-width:640px">
+    <p class="lead" style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px">Console</p>
+    <h1>Admin</h1>
+    <div class="card"><h3 style="margin:0 0 10px">Acting as</h3>
+      ${[["shore","Shore / operations"],["yara","Bahri Yara"],["jenan","Bahri Jenan"]].map(([id,l])=>
+        `<button class="boat ${state.role===id?"on":""}" style="width:100%;margin-bottom:8px" onclick="setRole('${id}')">${l}</button>`).join("")}
+    </div>
+    <div class="card" style="margin-top:12px"><h3 style="margin:0 0 8px">Shift</h3>
+      <p class="lead">Reset restores the seeded Ras Tanura day. This file keeps data in the browser only.</p>
+      <button class="submit" style="background:var(--red);width:auto;padding:0 16px" onclick="state.jobs=seed();toast('Shift reset');render()">Reset shift</button>
+    </div>
+  </div>`;
+}
+function openJob(id){
+  const j=state.jobs.find(x=>x.id===id); if(!j) return;
+  if(j.boat && (j.status==="Underway"||j.status==="Assigned"||j.status==="Returned")){ state.crew=j.boat; show("crew"); return; }
+  if(j.status==="Draft"){
+    const boat = prompt("Assign boat: yara or jenan", "yara");
+    if(boat==="yara"||boat==="jenan"){ j.boat=boat; j.status="Assigned"; j.captain=CAPTAINS.find(c=>c.boat===boat&&c.rank==="Master").id; toast("Assigned to "+bName(boat)); render(); }
+  }
+}
+
+function render(){
+  renderRoles();
+  const map={dashboard,jobs:jobsPage,boats:boatsPage,people:peoplePage,crew:crewPage,reports:reportsPage,admin:adminPage};
+  document.getElementById("root").innerHTML = (map[state.page]||dashboard)();
+  document.getElementById("bellCount").textContent = String(alerts().length);
+  tick();
+}
+function tick(){
+  const now=new Date();
+  const hh=String(now.getHours()).padStart(2,"0");
+  const mm=String(now.getMinutes()).padStart(2,"0");
+  const ss=String(now.getSeconds()).padStart(2,"0");
+  const el=document.getElementById("clock"); if(el) el.textContent=hh+":"+mm+":"+ss+" AST";
+  document.querySelectorAll(".liveclock").forEach(n=>n.textContent=hh+":"+mm);
+}
+setInterval(tick,1000);
+show("dashboard");
+</script>
+</body>
+</html>
