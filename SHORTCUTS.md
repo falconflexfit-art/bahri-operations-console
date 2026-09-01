@@ -10,7 +10,7 @@ Grok cannot write into the iPhone Files app. Shortcuts can.
 
 | # | Action | Settings |
 |---|---|---|
-| 1 | **URL** | `https://falconflexfit-art.github.io/bahri-operations-console/Bahri-Operations-Console.html` |
+| 1 | **URL** | `https://raw.githubusercontent.com/falconflexfit-art/bahri-operations-console/main/Bahri-Operations-Console.html` |
 | 2 | **Get Contents of URL** | Method: GET (default) |
 | 3 | **Set Name** | `Bahri-Operations-Console.html` |
 | 4 | **Save File** | Ask Where to Save: **Off**. Destination: **iCloud Drive**. Subpath: `Bahri/Bahri-Operations-Console.html`. Overwrite If File Exists: **On** |
@@ -29,7 +29,7 @@ To run it from Safari or Grok later:
 
 1. New shortcut named **Open Bahri Console**
 2. One action: **Open URLs**
-3. URL: `https://falconflexfit-art.github.io/bahri-operations-console/`
+3. URL: `https://htmlpreview.github.io/?https://raw.githubusercontent.com/falconflexfit-art/bahri-operations-console/main/Bahri-Operations-Console.html`
 4. Add to Home Screen from the shortcut’s share menu if you want a home icon.
 
 ## Shortcut 3 — Share Sheet (GitHub → Files)
@@ -53,6 +53,6 @@ Then in GitHub or Safari: **Share → Save to Bahri folder**.
 
 Open the live console in Safari:
 
-https://falconflexfit-art.github.io/bahri-operations-console/
+https://htmlpreview.github.io/?https://raw.githubusercontent.com/falconflexfit-art/bahri-operations-console/main/Bahri-Operations-Console.html
 
 Share → **Add to Home Screen**. That is not a file, but it is the fastest way to open it on iPhone.

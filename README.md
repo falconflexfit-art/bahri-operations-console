@@ -4,17 +4,15 @@ Ras Tanura dispatch board for Bahri Yara and Bahri Jenan.
 
 ## Open it
 
-- **Live (iPhone Safari):** https://falconflexfit-art.github.io/bahri-operations-console/
+- **Preview in browser:** https://htmlpreview.github.io/?https://raw.githubusercontent.com/falconflexfit-art/bahri-operations-console/main/Bahri-Operations-Console.html
 - **HTML file:** [Bahri-Operations-Console.html](./Bahri-Operations-Console.html)
 - **Source zip:** [Bahri-Operations-Console-code.zip](./Bahri-Operations-Console-code.zip)
-- **Release downloads:** https://github.com/falconflexfit-art/bahri-operations-console/releases/tag/v1.0.0
+- **Release:** https://github.com/falconflexfit-art/bahri-operations-console/releases/tag/v1.0.0
 
-## Save it on iPhone
+## Save it on iPhone (Shortcuts)
 
-Grok cannot write to the Files app. Use **Shortcuts**. See [SHORTCUTS.md](./SHORTCUTS.md).
+Grok cannot write to the Files app. Use Shortcuts — see [SHORTCUTS.md](./SHORTCUTS.md).
 
-Quick path:
+Download URL used by the shortcut:
 
-1. Build the 4-action shortcut **Save Bahri Console**
-2. Run it once
-3. File lands in **Files → iCloud Drive → Bahri**
+https://raw.githubusercontent.com/falconflexfit-art/bahri-operations-console/main/Bahri-Operations-Console.html
