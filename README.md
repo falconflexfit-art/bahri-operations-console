@@ -2,24 +2,19 @@
 
 Ras Tanura dispatch board for Bahri Yara and Bahri Jenan.
 
-## How to open
+## Open it
 
-On iPhone:
+- **Live (iPhone Safari):** https://falconflexfit-art.github.io/bahri-operations-console/
+- **HTML file:** [Bahri-Operations-Console.html](./Bahri-Operations-Console.html)
+- **Source zip:** [Bahri-Operations-Console-code.zip](./Bahri-Operations-Console-code.zip)
+- **Release downloads:** https://github.com/falconflexfit-art/bahri-operations-console/releases/tag/v1.0.0
 
-1. Open this repository in the **GitHub** app or Safari
-2. Tap **Bahri-Operations-Console.html**
-3. Tap **Raw** (Safari) or **Share → Save to Files**
+## Save it on iPhone
 
-On a computer, download the HTML and open it in Chrome or Edge. No install.
+Grok cannot write to the Files app. Use **Shortcuts**. See [SHORTCUTS.md](./SHORTCUTS.md).
 
-`Bahri-Operations-Console-code.zip` is the full source (React app + HTML).
+Quick path:
 
-## What it is
-
-Local-first operations console:
-
-- Request → Plan → Dispatch → Track → Execute → Verify → Report
-- Create job (vessel, type, pax, cargo, boat, captain)
-- Dispatch board for today’s shift
-- Crew stamps at device time (six events per trip)
-- Daily trip count
+1. Build the 4-action shortcut **Save Bahri Console**
+2. Run it once
+3. File lands in **Files → iCloud Drive → Bahri**
